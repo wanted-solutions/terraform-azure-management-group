@@ -6,18 +6,15 @@ variable "name" {
     condition = can(
       regex(
         lookup(
-          var.metadata.validators,
-          "name",
-          var.metadata.default_validator
-        ),
+          local.metadata.validator_expressions, 
+          "name", 
+          local.metadata.validator_expressions["default"]
+        ), 
         var.name
       )
     )
-    error_message = lookup(
-      var.metadata.error_messages,
-      "name",
-      var.metadata.default_error_message
-    )
+    error_message = "Name must be between 1 and 64 characters long and contain only letters, numbers, and hyphens."
+  
   }
 }
 
@@ -40,77 +37,46 @@ variable "subscription_ids" {
 }
 
 variable "metadata" {
-  description = "Metadata object TBA"
+  description = "Module metadata object to give user possibility to override default module values."
   type = object({
-    default_error_message = optional(string, "Unknown error during validation has occured.")
-    default_validator     = optional(string, ".*")
-    error_messages        = optional(map(string), {})
-    validators            = optional(map(string), {})
-    timeouts = optional(object({
-      create = optional(string, "30m")
-      read   = optional(string, "5m")
-      update = optional(string, "30m")
-      delete = optional(string, "30m")
+    module_external_metadata = optional(object({
+      source = optional(string, "file")
+      format = optional(string, "json")
     }), {})
+    resource_timeouts        = optional(map(object({
+      create = optional(string)
+      read   = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    })), {})
+    validator_error_messages = optional(map(string), {})
+    validator_expressions    = optional(map(string), {})
   })
   default = {
-    error_messages = {
-      timeouts = "Timeout object \"%s\" key must be defined as a one to three characters duration string and unit one letter suffix for minutes or hours, ie. 30m, 3h..."
+    resource_timeouts = {
+      "name" = {
+          "create" = "30m"
+      }
     }
-    validators = {
-      timeouts = "^(\\d{1,3}[m,h])$"
-    }
   }
 
   validation {
-    condition = can(
-      regex(
-        var.metadata.validators["timeouts"],
-        var.metadata.timeouts["create"]
-      )
+    condition = alltrue(
+      flatten([
+        for key, value in var.metadata.resource_timeouts : [
+          for timeout in value : timeout != null 
+            ? can(
+                regex(
+                  local.defaults.validator_expressions["timeout"], 
+                  timeout
+                )
+              ) 
+            : true
+        ]
+      ])
     )
     error_message = format(
-      var.metadata.error_messages["timeouts"],
-      "create"
-    )
-  }
-
-  validation {
-    condition = can(
-      regex(
-        var.metadata.validators["timeouts"],
-        var.metadata.timeouts["read"]
-      )
-    )
-    error_message = format(
-      var.metadata.error_messages["timeouts"],
-      "read"
-    )
-  }
-
-  validation {
-    condition = can(
-      regex(
-        var.metadata.validators["timeouts"],
-        var.metadata.timeouts["update"]
-      )
-    )
-    error_message = format(
-      var.metadata.error_messages["timeouts"],
-      "update"
-    )
-  }
-
-  validation {
-    condition = can(
-      regex(
-        var.metadata.validators["timeouts"],
-        var.metadata.timeouts["delete"]
-      )
-    )
-    error_message = format(
-      var.metadata.error_messages["timeouts"],
-      "delete"
+      local.defaults.validator_error_messages["timeout"]
     )
   }
 }
