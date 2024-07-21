@@ -6,15 +6,17 @@ variable "name" {
     condition = can(
       regex(
         lookup(
-          local.metadata.validator_expressions, 
-          "name", 
+          local.metadata.validator_expressions, "management_group_name",
           local.metadata.validator_expressions["default"]
-        ), 
-        var.name
+        ), var.name
       )
     )
-    error_message = "Name must be between 1 and 64 characters long and contain only letters, numbers, and hyphens."
-  
+    error_message = format(
+      lookup(
+        local.metadata.validator_error_messages, "management_group_name",
+        local.metadata.validator_error_messages["default"]
+      )
+    )
   }
 }
 
@@ -40,10 +42,10 @@ variable "metadata" {
   description = "Module metadata object to give user possibility to override default module values."
   type = object({
     module_external_metadata = optional(object({
-      source = optional(string, "file")
       format = optional(string, "json")
+      source = optional(string, "file")
     }), {})
-    resource_timeouts        = optional(map(object({
+    resource_timeouts = optional(map(object({
       create = optional(string)
       read   = optional(string)
       update = optional(string)
@@ -55,7 +57,8 @@ variable "metadata" {
   default = {
     resource_timeouts = {
       "name" = {
-          "create" = "30m"
+        "create" = "30m"
+        "update" = "30s"
       }
     }
   }
@@ -64,19 +67,19 @@ variable "metadata" {
     condition = alltrue(
       flatten([
         for key, value in var.metadata.resource_timeouts : [
-          for timeout in value : timeout != null 
-            ? can(
-                regex(
-                  local.defaults.validator_expressions["timeout"], 
-                  timeout
-                )
-              ) 
-            : true
+          for timeout in value : timeout != null
+          ? can(
+            regex(
+              local.definitions.validator_expressions["timeout"],
+              timeout
+            )
+          )
+          : true
         ]
       ])
     )
     error_message = format(
-      local.defaults.validator_error_messages["timeout"]
+      local.definitions.validator_error_messages["timeout"]
     )
   }
 }

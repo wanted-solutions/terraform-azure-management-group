@@ -15,6 +15,8 @@ Repository template for Azure Management Group Terraform module.
 | Name | Version |
 |------|---------|
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=3.113.0 |
+| <a name="provider_consul"></a> [consul](#provider\_consul) | n/a |
+| <a name="provider_local"></a> [local](#provider\_local) | n/a |
 
 ## Modules
 
@@ -26,13 +28,15 @@ No modules.
 |------|------|
 | [azurerm_management_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group) | resource |
 | [azurerm_management_group_subscription_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_group_subscription_association) | resource |
+| [consul_keys.metadata](https://registry.terraform.io/providers/hashicorp/consul/latest/docs/data-sources/keys) | data source |
+| [local_file.metadata](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_display_name"></a> [display\_name](#input\_display\_name) | A friendly name for this Management Group. If not specified, this will be the same as the "name" variable. | `string` | `""` | no |
-| <a name="input_metadata"></a> [metadata](#input\_metadata) | Metadata object TBA | <pre>object({<br>    default_error_message = optional(string, local.metadata.default_error_message)<br>    default_validator     = optional(string, local.metadata.default_validator)<br>    error_messages        = optional(map(string), {})<br>    validators            = optional(map(string), {})<br>    timeouts = optional(object({<br>      create = optional(string, "30m")<br>      read   = optional(string, "5m")<br>      update = optional(string, "30m")<br>      delete = optional(string, "30m")<br>    }), {})<br>  })</pre> | <pre>{<br>  "error_messages": {<br>    "timeouts": "Timeout object \"%s\" key must be defined as a one to three characters duration string and unit one letter suffix for minutes or hours, ie. 30m, 3h..."<br>  },<br>  "validators": {<br>    "timeouts": "^(\\d{1,3}[m,h])$"<br>  }<br>}</pre> | no |
+| <a name="input_metadata"></a> [metadata](#input\_metadata) | Module metadata object to give user possibility to override default module values. | <pre>object({<br>    module_external_metadata = optional(object({<br>      format = optional(string, "json")<br>      source = optional(string, "file")<br>    }), {})<br>    resource_timeouts = optional(map(object({<br>      create = optional(string)<br>      read   = optional(string)<br>      update = optional(string)<br>      delete = optional(string)<br>    })), {})<br>    validator_error_messages = optional(map(string), {})<br>    validator_expressions    = optional(map(string), {})<br>  })</pre> | <pre>{<br>  "resource_timeouts": {<br>    "name": {<br>      "create": "30m",<br>      "update": "30s"<br>    }<br>  }<br>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | The name or UUID for this Management Group, which needs to be unique across your tenant. A new UUID will be generated if not provided. Changing this forces a new resource to be created. | `string` | n/a | yes |
 | <a name="input_parent_group_id"></a> [parent\_group\_id](#input\_parent\_group\_id) | The parent management group ID of the resource group to create. | `string` | `""` | no |
 | <a name="input_subscription_ids"></a> [subscription\_ids](#input\_subscription\_ids) | List of subscription IDs to be assigned under management group. | `list(string)` | `[]` | no |
@@ -43,6 +47,7 @@ No modules.
 |------|-------------|
 | <a name="output_management_group"></a> [management\_group](#output\_management\_group) | Management Group object |
 | <a name="output_management_group_subscription_association"></a> [management\_group\_subscription\_association](#output\_management\_group\_subscription\_association) | Management Group Subscription Association object |
+| <a name="output_metadata"></a> [metadata](#output\_metadata) | Module metadata object |
 <!-- END_TF_DOCS -->
 
 ## Usage

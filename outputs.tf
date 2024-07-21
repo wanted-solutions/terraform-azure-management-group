@@ -10,5 +10,5 @@ output "management_group_subscription_association" {
 
 output "metadata" {
   description = "Module metadata object"
-  value = local.metadata
+  value       = local.metadata
 }
