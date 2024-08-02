@@ -5,5 +5,5 @@ provider "azurerm" {
 module "management_group" {
     source  = "../.."
     name = "example-management-group"
-    display_name = "Example Management Group"
+    display_name = "Example Management Group Display Name"
 }

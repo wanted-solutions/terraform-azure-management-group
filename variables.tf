@@ -6,14 +6,16 @@ variable "name" {
     condition = can(
       regex(
         lookup(
-          local.metadata.validator_expressions, "management_group_name",
+          local.metadata.validator_expressions, 
+          "management_group_name",
           local.metadata.validator_expressions["default"]
         ), var.name
       )
     )
     error_message = format(
       lookup(
-        local.metadata.validator_error_messages, "management_group_name",
+        local.metadata.validator_error_messages, 
+        "management_group_name",
         local.metadata.validator_error_messages["default"]
       )
     )
@@ -55,11 +57,9 @@ variable "metadata" {
     validator_expressions    = optional(map(string), {})
   })
   default = {
-    resource_timeouts = {
-      "name" = {
-        "create" = "30m"
-        "update" = "30s"
-      }
+    module_external_metadata = {
+      format = "json"
+      source = "file"
     }
   }
 
@@ -70,7 +70,7 @@ variable "metadata" {
           for timeout in value : timeout != null
           ? can(
             regex(
-              local.definitions.validator_expressions["timeout"],
+              local.definitions.validator_expressions["timeout_value"],
               timeout
             )
           )
@@ -78,8 +78,10 @@ variable "metadata" {
         ]
       ])
     )
-    error_message = format(
-      local.definitions.validator_error_messages["timeout"]
+    error_message = lookup(
+      local.definitions.validator_error_messages,
+      "timeout_value",
+      local.definitions.validator_error_messages["default"]
     )
   }
 }

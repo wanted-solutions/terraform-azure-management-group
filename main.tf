@@ -27,7 +27,7 @@ resource "azurerm_management_group" "this" {
     )
     delete = (
       (lookup(local.metadata.resource_timeouts, "azurerm_management_group", null) != null)
-      ? (lookup(local.metadata.resource_timeouts["azurerm_management_group"], "update", null) != null)
+      ? (lookup(local.metadata.resource_timeouts["azurerm_management_group"], "delete", null) != null)
       ? local.metadata.resource_timeouts["azurerm_management_group"]["delete"]
       : local.metadata.resource_timeouts.default.delete
       : local.metadata.resource_timeouts.default.delete

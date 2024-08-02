@@ -1,10 +1,10 @@
 data "local_file" "metadata" {
   count = (
     var.metadata.module_external_metadata != null
-    && var.metadata.module_external_metadata == "local"
+    && var.metadata.module_external_metadata == "file"
   ) ? 1 : 0
 
-  filename = format("%s/foo.", path.module)
+  filename = format("%s/foo.", path.root)
 }
 
 data "consul_keys" "metadata" {
@@ -16,6 +16,6 @@ data "consul_keys" "metadata" {
   key {
     name    = "ami"
     path    = "service/app/launch_ami"
-    default = "ami-1234"
+    default = "{}"
   }
 }
