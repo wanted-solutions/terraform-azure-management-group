@@ -44,9 +44,9 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_azurerm_consumption_budget_management_group"></a> [azurerm\_consumption\_budget\_management\_group](#output\_azurerm\_consumption\_budget\_management\_group) | Consumption Budget Management Group object |
 | <a name="output_management_group"></a> [management\_group](#output\_management\_group) | Management Group object |
 | <a name="output_management_group_subscription_association"></a> [management\_group\_subscription\_association](#output\_management\_group\_subscription\_association) | Management Group Subscription Association object |
-| <a name="output_metadata"></a> [metadata](#output\_metadata) | Module metadata object |
 <!-- END_TF_DOCS -->
 
 ## Usage

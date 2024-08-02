@@ -8,7 +8,7 @@ output "management_group_subscription_association" {
   value       = azurerm_management_group_subscription_association.this
 }
 
-output "metadata" {
-  description = "Module metadata object"
-  value       = local.metadata
+output "azurerm_consumption_budget_management_group" {
+  description = "Consumption Budget Management Group object"
+  value       = azurerm_consumption_budget_management_group.this
 }
