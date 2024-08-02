@@ -1,52 +1,83 @@
 resource "azurerm_consumption_budget_management_group" "this" {
-  name                = "example"
+  for_each = {
+    for budget in var.budgets : budget.name => budget
+  }
+  name                = var.name
   management_group_id = azurerm_management_group.this.id
 
-  amount     = 1000
-  time_grain = "Monthly"
+  amount     = each.value.amount
+  time_grain = each.value.time_grain
 
   time_period {
-    start_date = "2022-06-01T00:00:00Z"
-    end_date   = "2022-07-01T00:00:00Z"
+    start_date = each.value.start_date
+    end_date   = each.value.end_date
   }
 
   filter {
-    dimension {
-      name = "ResourceGroupName"
-      values = [
-        azurerm_resource_group.this.name,
-      ]
+    dynamic "dimension" {
+      for_each = {
+        for dimension in each.value.filter.dimensions : dimension.name => dimension
+      }
+      content {
+        name   = dimension.name
+        values = dimension.value
+      }
+
     }
 
-    tag {
-      name = "foo"
-      values = [
-        "bar",
-        "baz",
-      ]
+    dynamic "tag" {
+      for_each = {
+        for tag in each.value.filter.tag : tag.name => tag
+      }
+      content {
+        name   = tag.name
+        values = tag.values
+      }
+
     }
   }
 
-  notification {
-    enabled   = true
-    threshold = 90.0
-    operator  = "EqualTo"
-
-    contact_emails = [
-      "foo@example.com",
-      "bar@example.com",
-    ]
+  dynamic "notification" {
+    for_each = {
+      for notification in each.value.notifications : notification.name => notification
+    }
+    content {
+      enabled        = notification.enabled
+      threshold      = notification.threshold
+      operator       = notification.operator
+      threshold_type = notification.threshold_type
+      contact_emails = notification.contact_emails
+    }
   }
 
-  notification {
-    enabled        = false
-    threshold      = 100.0
-    operator       = "GreaterThan"
-    threshold_type = "Forecasted"
-
-    contact_emails = [
-      "foo@example.com",
-      "bar@example.com",
-    ]
+  timeouts {
+    create = (
+      (lookup(local.metadata.resource_timeouts, "azurerm_consumption_budget_management_group", null) != null)
+      ? (lookup(local.metadata.resource_timeouts["azurerm_consumption_budget_management_group"], "create", null) != null)
+      ? local.metadata.resource_timeouts["azurerm_consumption_budget_management_group"]["create"]
+      : local.metadata.resource_timeouts.default.create
+      : local.metadata.resource_timeouts.default.create
+    )
+    read = (
+      (lookup(local.metadata.resource_timeouts, "azurerm_consumption_budget_management_group", null) != null)
+      ? (lookup(local.metadata.resource_timeouts["azurerm_consumption_budget_management_group"], "read", null) != null)
+      ? local.metadata.resource_timeouts["azurerm_consumption_budget_management_group"]["read"]
+      : local.metadata.resource_timeouts.default.read
+      : local.metadata.resource_timeouts.default.read
+    )
+    update = (
+      (lookup(local.metadata.resource_timeouts, "azurerm_consumption_budget_management_group", null) != null)
+      ? (lookup(local.metadata.resource_timeouts["azurerm_consumption_budget_management_group"], "update", null) != null)
+      ? local.metadata.resource_timeouts["azurerm_consumption_budget_management_group"]["update"]
+      : local.metadata.resource_timeouts.default.update
+      : local.metadata.resource_timeouts.default.update
+    )
+    delete = (
+      (lookup(local.metadata.resource_timeouts, "azurerm_consumption_budget_management_group", null) != null)
+      ? (lookup(local.metadata.resource_timeouts["azurerm_consumption_budget_management_group"], "delete", null) != null)
+      ? local.metadata.resource_timeouts["azurerm_consumption_budget_management_group"]["delete"]
+      : local.metadata.resource_timeouts.default.delete
+      : local.metadata.resource_timeouts.default.delete
+    )
   }
 }

@@ -6,7 +6,7 @@ variable "name" {
     condition = can(
       regex(
         lookup(
-          local.metadata.validator_expressions, 
+          local.metadata.validator_expressions,
           "management_group_name",
           local.metadata.validator_expressions["default"]
         ), var.name
@@ -14,7 +14,7 @@ variable "name" {
     )
     error_message = format(
       lookup(
-        local.metadata.validator_error_messages, 
+        local.metadata.validator_error_messages,
         "management_group_name",
         local.metadata.validator_error_messages["default"]
       )
@@ -38,6 +38,36 @@ variable "subscription_ids" {
   description = "List of subscription IDs to be assigned under management group."
   type        = list(string)
   default     = []
+}
+
+variable "budgets" {
+  description = "List of budgets to be assigned under management group."
+  type = list(object({
+    name       = string
+    amount     = number
+    time_grain = string
+    start_date = string
+    end_date   = string
+    filter = object({
+      dimension = list(object({
+        name   = string
+        values = list(string)
+      }))
+      tag = list(object({
+        name   = string
+        values = list(string)
+      }))
+    })
+    notifications = list(object({
+      enabled        = bool
+      threshold      = number
+      operator       = string
+      threshold_type = string
+      contact_emails = list(string)
+    }))
+  }))
+  default = []
+
 }
 
 variable "metadata" {
