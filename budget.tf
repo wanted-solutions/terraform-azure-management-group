@@ -19,8 +19,8 @@ resource "azurerm_consumption_budget_management_group" "this" {
         for dimension in each.value.filter.dimensions : dimension.name => dimension
       }
       content {
-        name   = dimension.name
-        values = dimension.value
+        name   = dimension.value.name
+        values = dimension.value.value
       }
 
     }
@@ -30,8 +30,8 @@ resource "azurerm_consumption_budget_management_group" "this" {
         for tag in each.value.filter.tag : tag.name => tag
       }
       content {
-        name   = tag.name
-        values = tag.values
+        name   = tag.value.name
+        values = tag.value.values
       }
 
     }
@@ -42,11 +42,11 @@ resource "azurerm_consumption_budget_management_group" "this" {
       for notification in each.value.notifications : notification.name => notification
     }
     content {
-      enabled        = notification.enabled
-      threshold      = notification.threshold
-      operator       = notification.operator
-      threshold_type = notification.threshold_type
-      contact_emails = notification.contact_emails
+      enabled        = notification.value.enabled
+      threshold      = notification.value.threshold
+      operator       = notification.value.operator
+      threshold_type = notification.value.threshold_type
+      contact_emails = notification.value.contact_emails
     }
   }
 
