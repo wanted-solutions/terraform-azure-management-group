@@ -2,7 +2,7 @@ resource "azurerm_consumption_budget_management_group" "this" {
   for_each = {
     for budget in var.budgets : budget.name => budget
   }
-  name                = var.name
+  name                = each.value.name
   management_group_id = azurerm_management_group.this.id
 
   amount     = each.value.amount
