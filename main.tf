@@ -1,7 +1,7 @@
 resource "azurerm_management_group" "this" {
   name                       = var.name
   display_name               = var.display_name != "" ? var.display_name : var.name
-  parent_management_group_id = var.parent_group_id != "" ? var.parent_group_id : null
+  parent_management_group_id = var.parent_group_id != "" ? format("/providers/Microsoft.Management/managementGroups/%s", var.parent_group_id) : null
 
   timeouts {
     create = (
