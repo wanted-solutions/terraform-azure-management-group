@@ -70,33 +70,20 @@ variable "budgets" {
 
 }
 
+// Define the module input metadata variable
 variable "metadata" {
   description = "Module metadata object to give user possibility to override default module values."
   type = object({
-    module_external_metadata = optional(object({
-      format = optional(string, "json")
-      source = optional(string, "file")
-    }), {})
-    resource_timeouts = optional(map(object({
-      create = optional(string)
-      read   = optional(string)
-      update = optional(string)
-      delete = optional(string)
-    })), {})
+    resource_timeouts        = optional(map(map(string)), {})
     validator_error_messages = optional(map(string), {})
     validator_expressions    = optional(map(string), {})
   })
-  default = {
-    module_external_metadata = {
-      format = "json"
-      source = "file"
-    }
-  }
+  default = {}
 
   validation {
     condition = alltrue(
       flatten([
-        for key, value in var.metadata.resource_timeouts : [
+        for value in var.metadata.resource_timeouts : [
           for timeout in value : timeout != null
           ? can(
             regex(
@@ -114,4 +101,27 @@ variable "metadata" {
       local.definitions.validator_error_messages["default"]
     )
   }
+
+  validation {
+    condition = alltrue(
+      flatten([
+        for value in var.metadata.resource_timeouts : [
+          for key, timeout in value : timeout != null
+          ? can(
+            regex(
+              local.definitions.validator_expressions["timeout_key"],
+              key
+            )
+          )
+          : true
+        ]
+      ])
+    )
+    error_message = lookup(
+      local.definitions.validator_error_messages,
+      "timeout_key",
+      local.definitions.validator_error_messages["default"]
+    )
+  }
 }
+

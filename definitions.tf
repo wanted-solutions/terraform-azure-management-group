@@ -19,40 +19,17 @@ locals {
       timeout_value = "^[0-9]+[smh]$"
     }
   }
-  defaults = {
-    validator_error_messages = merge(
-      local.definitions.validator_error_messages,
-      (length(data.consul_keys.metadata) > 0)
-      ? jsondecode(data.consul_keys.metadata["validator_error_messages"])
-      : {}
-    )
-    validator_expressions = merge(
-      local.definitions.validator_expressions,
-      (length(data.consul_keys.metadata) > 0)
-      ? jsondecode(data.consul_keys.metadata["validator_expressions"])
-      : {}
-    )
-    resource_timeouts = merge(
-      local.definitions.resource_timeouts,
-      (length(data.consul_keys.metadata) > 0)
-      ? jsondecode(data.consul_keys.metadata["resource_timeouts"])
-      : {}
-    )
-  }
   metadata = {
     validator_error_messages = merge(
       local.definitions.validator_error_messages,
-      length(data.consul_keys.metadata) > 0 ? jsondecode(data.consul_keys.metadata) : {},
       var.metadata.validator_error_messages
     )
     validator_expressions = merge(
       local.definitions.validator_expressions,
-      length(data.consul_keys.metadata) > 0 ? jsondecode(data.consul_keys.metadata) : {},
       var.metadata.validator_expressions
     )
     resource_timeouts = merge(
       local.definitions.resource_timeouts,
-      length(data.consul_keys.metadata) > 0 ? jsondecode(data.consul_keys.metadata) : {},
       var.metadata.resource_timeouts
     )
   }
