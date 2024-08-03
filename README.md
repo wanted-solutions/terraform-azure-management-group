@@ -1,5 +1,7 @@
 # terraform-module-azure-management-group
 
+> This module is still under development and API should be considered as stable after `1.0.0` release.
+
 Repository template for Azure Management Group Terraform module.
 
 <!-- BEGIN_TF_DOCS -->
@@ -44,8 +46,8 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_azurerm_consumption_budget_management_group"></a> [azurerm\_consumption\_budget\_management\_group](#output\_azurerm\_consumption\_budget\_management\_group) | Consumption Budget Management Group object |
 | <a name="output_management_group"></a> [management\_group](#output\_management\_group) | Management Group object |
+| <a name="output_management_group_consumption_budget"></a> [management\_group\_consumption\_budget](#output\_management\_group\_consumption\_budget) | Consumption Budget Management Group object |
 | <a name="output_management_group_subscription_association"></a> [management\_group\_subscription\_association](#output\_management\_group\_subscription\_association) | Management Group Subscription Association object |
 <!-- END_TF_DOCS -->
 
